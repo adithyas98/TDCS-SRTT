@@ -190,6 +190,18 @@ if __name__ == '__main__':
     print(type(extractedData))
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
+
+    #Columns 1
+    columns = ['GROUP','TASK']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)
+
+
+
+
     '''
     #Columns 1,Log RT Only
     columns = ['GROUP','BLOCK','TASK','CONDITION']
