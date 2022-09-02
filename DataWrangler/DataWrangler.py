@@ -114,7 +114,6 @@ class TDCSSRTTDataWrangler:
         else:
             #if this is not the case then we will create multiple dataframes
             #    and so we need a way to store them, we will use a dictionary
-
             extractedData = dict()
         for combination in columnCombinations:
             #We want to iterate through all of the conditions we want
@@ -127,24 +126,79 @@ class TDCSSRTTDataWrangler:
                 print(combination)
                 print(df.head(50))
             #Now we can worry about saving everything correctly
+            if dataColumn != None:
+                #Then we will extract the columns we want and use descriptive names
+                for d in dataColumn:
+                    columnName = "{}_{}".format("_".join(combination),d)
+                    #add the column in the data frame
+                    extractedData[columnName] = df[d]
+            else:
+                #if dataColumn is None, then add it to a dictionary
+                key = "_".join(combination)
+                extractedData[key] = df
+
+        return extractedData
 
             
-
-
-
-
-        
-
-
+    def saveDataFrame(self,data,directory,baseFilename=None):
+        '''
+        This method will save the data frame or dictionary
+        Inputs:
+            - data (dictionary or dataframe): This is the data that we want
+                to save as a excel file. This function plays well with the 
+                extractDataPoints method above.
+            - directory: the directory to save the file in
+            -baseFilename: The base name of the file. If data is a dictionary,
+                the specific descriptors for the data frames in that 
+                dictionary (the column names) will be added to this string. If
+                data is a dataframe, then only this name will be used
+        output:
+            -None, just a saved file
+        '''
+        #First make the output directory if it doesn't exist
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+        os.chdir(directory)
+        #Save the files based on if data is a dict or a dataframe
+        if type(data) == dict:
+            #Then we want to iterate through all of the keys and then
+            #   Save the dataframe with that name
+            print("Printing KEYS")
+            print(data.keys())
+            for key in data.keys():
+                filename = "{}_{}".format(baseFilename,key)
+                data[key].to_csv("{}.csv".format(filename))
+        elif isinstance(data,pd.DataFrame):
+            #We just want to save the dataframe with the basefilename
+            data.to_csv("{}.csv".format(baseFilename))
 
 
 if __name__ == '__main__':
     fileDir = '/mnt/h/tDCS paper2 SRTT'
     DW = TDCSSRTTDataWrangler(fileDir=fileDir)
-    columns = ['GROUP','BLOCK','TASK','CONDITION']
-    DW.extractDataPoints(columns)
-    
 
+    #Now we can create an output file
+    outputDir = os.path.join(fileDir,'WrangledData')
+    if not os.path.exists(outputDir):
+        os.mkdir(outputDir)
+    os.chdir(outputDir)
+
+    #Columns 1
+    columns = ['GROUP','BLOCK','TASK','CONDITION']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)
+    '''
+    #Columns 1,Log RT Only
+    columns = ['GROUP','BLOCK','TASK','CONDITION']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns,dataColumn=['LOG_RT'])
+    DW.saveDataFrame(extractedData,folder,"{}_LOG_RTs".format(folder))
+    os.chdir(outputDir)
+    '''
+    
 
 
 
