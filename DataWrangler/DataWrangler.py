@@ -70,6 +70,7 @@ class TDCSSRTTDataWrangler:
         for c in columns:
             for d in self.dataFrames:
                 assert c in d.columns
+
         #Now we want to ensure that the label combinations exist in the columns
         if labelCombinations != None:
             for d in self.dataFrames:
@@ -140,7 +141,30 @@ class TDCSSRTTDataWrangler:
         return extractedData
 
             
-    def saveDataFrame(self,data,directory,baseFilename=None):
+    def combineData(self,directory,dataColumn):
+        '''
+        This method will combine all of the extracted data files
+        and put the data into one dataFrame by column
+        Inputs:
+            -directory: the directory to check
+            -datacolumn:the column to use for data
+        '''
+        combinedDataFrame = pd.DataFrame()
+
+        #change directory into the directory above
+        os.chdir(directory)
+        for f in os.listdir():
+            #check if the file is a csv
+            if not f.endswith('.csv'):
+                continue
+            #Open up the data as a pandas dataframe
+            fileData = pd.read_csv(f)
+            if DEBUG:
+                print(fileData.head())
+            combinedDataFrame[f.split('.')[0]] = fileData[dataColumn]
+        return combinedDataFrame
+
+    def saveDataFrame(self,data,directory,baseFilename=''):
         '''
         This method will save the data frame or dictionary
         Inputs:
@@ -183,6 +207,7 @@ if __name__ == '__main__':
         os.mkdir(outputDir)
     os.chdir(outputDir)
 
+
     #Columns 1
     columns = ['GROUP','BLOCK','TASK','CONDITION']
     folder = '_'.join(columns)
@@ -191,15 +216,21 @@ if __name__ == '__main__':
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
 
-    #Columns 1
+    #Columns 2
     columns = ['GROUP','TASK']
     folder = '_'.join(columns)
     extractedData = DW.extractDataPoints(columns)
     print(type(extractedData))
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
-
-
+    
+    print("Combining Data!")
+    #Now we can go through and create the combined csv files
+    os.chdir(outputDir)
+    for d in os.listdir():
+        folder = os.path.join(outputDir,d)
+        extractedData = DW.combineData(folder,'LOG_RT')
+        DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
 
 
     '''
