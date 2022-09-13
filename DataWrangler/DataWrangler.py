@@ -198,7 +198,8 @@ class TDCSSRTTDataWrangler:
 
 
 if __name__ == '__main__':
-    fileDir = '/mnt/h/tDCS paper2 SRTT'
+    #fileDir = '/mnt/h/tDCS paper2 SRTT'
+    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
     DW = TDCSSRTTDataWrangler(fileDir=fileDir)
 
     #Now we can create an output file
@@ -223,10 +224,20 @@ if __name__ == '__main__':
     print(type(extractedData))
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
-    
+
+    #Columns 3
+    columns = ['SUBJECT','RUN']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)   
+
+
+
     print("Combining Data!")
     #Now we can go through and create the combined csv files
-    os.chdir(outputDir)
+    os.chdir(outputDir) 
     for d in os.listdir():
         folder = os.path.join(outputDir,d)
         extractedData = DW.combineData(folder,'LOG_RT')
