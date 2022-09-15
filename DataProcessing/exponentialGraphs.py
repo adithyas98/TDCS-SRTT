@@ -61,6 +61,7 @@ class ExponentialGraphs:
         #get the unique values of subjects and runs
 
         uniqueSubjectRun = self.getUnique(self.originalDataFilepath,columns=['SUBJECT','RUN'])
+        print(uniqueSubjectRun[0])
 
         for subject in uniqueSubjectRun[0]:
             averageRunDict = dict()
@@ -70,10 +71,14 @@ class ExponentialGraphs:
                 #now, we need to iterate through each of the subjects's runs
                 #   create a single data frame for each subject
                 for f in os.listdir(filepath):
-                    if (subject in f) and (run in f):
+                    if (subject in f) and ("{}.csv".format(run) in f):
                         df = pd.read_csv(os.path.join(filepath,f))
                         averageRunDict['RUN'].append(run)
-                        averageRunDict['AverageLogRT'].append(df['LOG_RT'].mean())
+                        try:
+                            averageRunDict['AverageLogRT'].append(df['LOG_RT'].mean())
+                        except:
+                            #This is what the normalized dataset uses
+                            averageRunDict['AverageLogRT'].append(df['Normalized_Log_RT'].mean())
             #We have procesed all of the runs, now we can save the files
             df = pd.DataFrame.from_dict(averageRunDict)
 
@@ -126,7 +131,11 @@ class ExponentialGraphs:
                 outputFilePath = os.path.join(outputDir,'{}_{}_RunAvgLogRT.csv'.format(c,g))
                 outputDf.to_csv(outputFilePath)
 
-        
+    def percentFast(self,subjectFolder='',trialDataFolder=''):
+        '''
+        TODO: Create a percent fast column on all of the individual run results
+            spreadsheets. Using the individual trial data spreadsheets
+        '''
 
 
         
@@ -139,13 +148,24 @@ if __name__ == '__main__':
 
     expG = ExponentialGraphs()
 
-    
+    '''#Non-Normalized Data    
     fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
     uniqueValues = expG.getUnique(filepath=fileDir)
 
-    #expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN')
+    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN')
 
     expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs')
+    '''
+
+
+    #Normalized Data
+    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
+    uniqueValues = expG.getUnique(filepath=fileDir)
+
+    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN')
+
+    expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs')
+
 
 
 

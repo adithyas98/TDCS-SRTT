@@ -199,11 +199,78 @@ class TDCSSRTTDataWrangler:
 
 if __name__ == '__main__':
     #fileDir = '/mnt/h/tDCS paper2 SRTT'
+    '''#Non Normalized Data
     fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
     DW = TDCSSRTTDataWrangler(fileDir=fileDir)
 
     #Now we can create an output file
     outputDir = os.path.join(fileDir,'WrangledData')
+    if not os.path.exists(outputDir):
+        os.mkdir(outputDir)
+    os.chdir(outputDir)
+
+    '''
+
+    '''
+    #Columns 1
+    columns = ['GROUP','BLOCK','TASK','CONDITION']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)
+
+    #Columns 2
+    columns = ['GROUP','TASK']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)
+
+    #Columns 3
+    columns = ['SUBJECT','RUN']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns)
+    print(type(extractedData))
+    DW.saveDataFrame(extractedData,folder)
+    os.chdir(outputDir)   
+
+
+
+    print("Combining Data!")
+    #Now we can go through and create the combined csv files
+    os.chdir(outputDir) 
+    for d in os.listdir():
+        folder = os.path.join(outputDir,d)
+        extractedData = DW.combineData(folder,'LOG_RT')
+        DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
+    '''
+
+    '''
+    #Columns 1,Log RT Only
+    columns = ['GROUP','BLOCK','TASK','CONDITION']
+    folder = '_'.join(columns)
+    extractedData = DW.extractDataPoints(columns,dataColumn=['LOG_RT'])
+    DW.saveDataFrame(extractedData,folder,"{}_LOG_RTs".format(folder))
+    os.chdir(outputDir)
+
+
+    print("Combining Data!")
+    #Now we can go through and create the combined csv files
+    os.chdir("/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs") 
+    folder = "/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs"
+    extractedData = DW.combineData(folder,'AverageLogRT')
+    DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format("AverageRunRTbySubject&Condition"))
+    '''
+
+
+    #Run the same stuff for the normalized Data
+    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
+    DW = TDCSSRTTDataWrangler(fileDir=fileDir)
+
+    #Now we can create an output file
+    outputDir = os.path.join(fileDir,'NormalizedWrangledData')
     if not os.path.exists(outputDir):
         os.mkdir(outputDir)
     os.chdir(outputDir)
@@ -240,19 +307,6 @@ if __name__ == '__main__':
     os.chdir(outputDir) 
     for d in os.listdir():
         folder = os.path.join(outputDir,d)
-        extractedData = DW.combineData(folder,'LOG_RT')
+        extractedData = DW.combineData(folder,'Normalized_Log_RT')
         DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
-
-
-    '''
-    #Columns 1,Log RT Only
-    columns = ['GROUP','BLOCK','TASK','CONDITION']
-    folder = '_'.join(columns)
-    extractedData = DW.extractDataPoints(columns,dataColumn=['LOG_RT'])
-    DW.saveDataFrame(extractedData,folder,"{}_LOG_RTs".format(folder))
-    os.chdir(outputDir)
-    '''
-    
-
-
 
