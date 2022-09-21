@@ -275,7 +275,7 @@ if __name__ == '__main__':
         os.mkdir(outputDir)
     os.chdir(outputDir)
 
-
+    '''
     #Columns 1
     columns = ['GROUP','BLOCK','TASK','CONDITION']
     folder = '_'.join(columns)
@@ -291,6 +291,7 @@ if __name__ == '__main__':
     print(type(extractedData))
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
+    '''
 
     #Columns 3
     columns = ['SUBJECT','RUN']
@@ -306,6 +307,8 @@ if __name__ == '__main__':
     #Now we can go through and create the combined csv files
     os.chdir(outputDir) 
     for d in os.listdir():
+        if not os.path.isdir(d):
+            continue
         folder = os.path.join(outputDir,d)
         extractedData = DW.combineData(folder,'Normalized_Log_RT')
         DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
