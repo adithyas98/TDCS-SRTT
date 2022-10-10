@@ -2,9 +2,10 @@
 import pandas as pd
 import os
 import itertools 
+import numpy as np
 #Created By Adithya Shastry
 #Email: ams2590@cumc.columbia.edu
-
+DEBUG = True
 
 class ExponentialGraphs:
 
@@ -218,6 +219,120 @@ class ExponentialGraphs:
                 averageDf['GroupAvgPercentFast'] = averageDf.mean(axis=1,numeric_only=True)
                 averageDf.to_csv(os.path.join(exportDir,"{}_{}_GroupAverages.csv".format(c,g)))
 
+    def combineRTData(self,nonNormData,normData,outputDir):
+        '''
+        This function will combine and average the subject run data and output
+        columns for the following:
+            - Block 1
+            - Block 2
+            - Block 3
+            - Random Trials from Block 1 and Block 2
+            - Random Trials from Block 3
+            - Average accross Block 1 and 2
+        All of the above will be done for each of the conditions
+        Inputs:
+            - nonNormData:full filepath to the directory where the 
+                nonNormData excel file is kept
+            - normData: full filepath to the directory where the normalized
+                data is kept
+            - outputDir: Full filepath to where the output file should be
+        '''
+        #To comeplete this we first need to ensure that subject, run
+        #   data is generated for both the nonNormData and normData
+        '''
+        for d in [nonNormData,normData]:
+            uniqueValues = self.getUnique(filepath=d)
+            try:
+                self.averageTrials(filepath=os.path.join(d,'WrangledData','SUBJECT_RUN'))
+            except:
+                self.averageTrials(filepath=os.path.join(d,'NormalizedWrangledData','SUBJECT_RUN'))
+        '''
+        #Now we can look into averaging the data that we want
+        conditions = self.getUnique(filepath=nonNormData,columns=['CONDITION'])[0]
+        subjects = self.getUnique(filepath=nonNormData)[0]
+        
+        #First create paths for where the subject,run average data
+        #   is stored for each participant
+        normalizedAvgData = os.path.join(normData,'NormalizedWrangledData','SUBJECT_RUN','subjectRunAvgs')
+        nonNormalizedAvgData = os.path.join(nonNormData,'WrangledData','SUBJECT_RUN','subjectRunAvgs')
+        #now we can create a dictionary to store our results
+
+        rtSubjectData = dict()
+        #Now we can iterate through each of the conditions,subjects
+        for sub in subjects:
+            #Here we want to create a new dictionary for the subject
+            #We only want the subject code which is before the first "_"
+            sub = sub.split("_")[0]
+            rtSubjectData[sub] = dict()
+            for cond in conditions:
+                if DEBUG:
+                    print(sub,cond)
+                #We want to iterate through each condition since we have to compile
+                #   all of the data points we want for each of the conditions
+                
+                #First deal with all of the normalized_data
+                #Load up the excel file with run averages
+                for f in os.listdir(normalizedAvgData):
+                    if not (f.endswith('.csv') and (sub.lower() in f.lower()) and (cond.lower() in f.lower())):
+                        #This isn't the file we are looking for so continue
+                        continue
+                    #Otherwise, we want to extract the information we want
+                    if DEBUG:
+                        print("Found 1")
+                    df = pd.read_csv(os.path.join(normalizedAvgData,f))
+                    
+                    #Now we want to copy over the averageLogRt column
+                    
+                    for b,block in enumerate(np.array_split(df['AverageLogRT'],3)):
+                         #First we want to take the average of the block
+                         assert len(block) == 10#just to double check
+                         avg = np.mean(block)
+                         rtSubjectData[sub]["AvgNormLogRT{}Block{}".format(cond,b+1)] = avg
+
+                    #Now, while we are here we should also average block 1 & 2
+                    b1Avg = rtSubjectData[sub]["AvgNormLogRT{}Block{}".format(cond,1)]
+                    b2Avg = rtSubjectData[sub]["AvgNormLogRT{}Block{}".format(cond,2)]
+
+                    #Now we can average these and add them to the dict
+                    rtSubjectData[sub]["AvgNormLogRT{}Block1_2".format(cond)] = (b1Avg + b2Avg)/2
+
+
+                    #Now we can extract the random trial averages from the 
+                    #   Non-normalized data
+                    for f in os.listdir(nonNormalizedAvgData):
+                        if not (f.endswith('.csv') and (sub.lower() in f.lower()) and (cond.lower() in f.lower())):
+                            #This isn't the file we are looking for so continue
+                            continue
+                    if DEBUG:
+                        print("Found 2")
+                    #Load in the dataset
+                    df = pd.read_csv(os.path.join(nonNormalizedAvgData,f))
+                    for b,block in enumerate(np.array_split(df['AverageLogRT'],3)):
+                        assert len(block) == 12#double check we are opening the right file
+                        block = list(block)
+                        avg = (block[0] + block[9])/2#The random runs are: 1,10
+                        #The random trials are 1,10 in each block(12 runs)
+                        rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,b+1)] = avg
+
+                    #we want to also get an avg for block 1 & 2
+   
+
+                    b1Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,1)]
+                    b2Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,2)]
+
+                    #Now we can average these and add them to the dict
+                    rtSubjectData[sub]["AvgRandomLogRT{}Block1_2".format(cond)] = (b1Avg + b2Avg)/2
+            
+        #Now we can save our dictionary as a csv file
+        df = pd.DataFrame(rtSubjectData)
+        df = df.transpose()
+        #Now we can save it
+        df.to_csv(os.path.join(outputDir,'SubjectRTAvgs.csv'))
+
+
+
+                    
+                    
 
                     
             
@@ -243,7 +358,6 @@ if __name__ == '__main__':
     expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN')
 
     expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs')
-    '''
 
 
     #Normalized Data
@@ -260,6 +374,19 @@ if __name__ == '__main__':
     trialDataFolder = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN'
     outputFolder = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs'
     expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
+
+    '''
+
+    #combine and save RT data
+    nonNormData = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+
+    normData = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
+    outputDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+
+
+    expG.combineRTData(nonNormData,normData,outputDir)
+
+
 
 
 
