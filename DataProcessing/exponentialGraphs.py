@@ -303,26 +303,26 @@ class ExponentialGraphs:
                         if not (f.endswith('.csv') and (sub.lower() in f.lower()) and (cond.lower() in f.lower())):
                             #This isn't the file we are looking for so continue
                             continue
-                    if DEBUG:
-                        print("Found 2")
-                    #Load in the dataset
-                    df = pd.read_csv(os.path.join(nonNormalizedAvgData,f))
-                    for b,block in enumerate(np.array_split(df['AverageLogRT'],3)):
-                        assert len(block) == 12#double check we are opening the right file
-                        block = list(block)
-                        avg = (block[0] + block[9])/2#The random runs are: 1,10
-                        #The random trials are 1,10 in each block(12 runs)
-                        rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,b+1)] = avg
+                        if DEBUG:
+                            print("Found 2")
+                        #Load in the dataset
+                        df = pd.read_csv(os.path.join(nonNormalizedAvgData,f))
+                        for b,block in enumerate(np.array_split(df['AverageLogRT'],3)):
+                            assert len(block) == 12#double check we are opening the right file
+                            block = list(block)
+                            avg = (block[0] + block[9])/2#The random runs are: 1,10
+                            #The random trials are 1,10 in each block(12 runs)
+                            rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,b+1)] = avg
 
-                    #we want to also get an avg for block 1 & 2
-   
+                        #we want to also get an avg for block 1 & 2
+       
 
-                    b1Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,1)]
-                    b2Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,2)]
+                        b1Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,1)]
+                        b2Avg = rtSubjectData[sub]["AvgRandomLogRT{}Block{}".format(cond,2)]
 
-                    #Now we can average these and add them to the dict
-                    rtSubjectData[sub]["AvgRandomLogRT{}Block1_2".format(cond)] = (b1Avg + b2Avg)/2
-            
+                        #Now we can average these and add them to the dict
+                        rtSubjectData[sub]["AvgRandomLogRT{}Block1_2".format(cond)] = (b1Avg + b2Avg)/2
+                
         #Now we can save our dictionary as a csv file
         df = pd.DataFrame(rtSubjectData)
         df = df.transpose()
@@ -352,36 +352,36 @@ if __name__ == '__main__':
     expG = ExponentialGraphs()
 
     '''#Non-Normalized Data    
-    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+    fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
     uniqueValues = expG.getUnique(filepath=fileDir)
 
-    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN')
+    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN')
 
-    expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs')
+    expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs')
 
 
     #Normalized Data
 
     expG = ExponentialGraphs()
-    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
+    fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData'
     uniqueValues = expG.getUnique(filepath=fileDir)
 
-    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN')
+    expG.averageTrials(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN')
 
-    expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs')
+    expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs')
 
-    subjectFolder = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs'
-    trialDataFolder = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN'
-    outputFolder = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs'
+    subjectFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs'
+    trialDataFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN'
+    outputFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs'
     expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
 
     '''
 
     #combine and save RT data
-    nonNormData = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+    nonNormData = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
 
-    normData = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
-    outputDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+    normData = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData'
+    outputDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
 
 
     expG.combineRTData(nonNormData,normData,outputDir)
