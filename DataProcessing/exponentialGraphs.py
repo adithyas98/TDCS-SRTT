@@ -102,7 +102,8 @@ class ExponentialGraphs:
         if not os.path.exists(outputDir):
             os.mkdir(outputDir)
         #create a list to keep track of conditions
-        conditions = ['Sham','Anod','Cath','Vertex']
+        #uniqueCondGroup = self.getUnique(self.originalDataFilepath,columns=['GROUP','CONDITION'])
+        conditions = ['Anod','cath','vertex','sham']
         #create a list to deliniate subject groups
         groups = ['CONTROL','PATIENT']
         #get the unique runs
@@ -183,11 +184,11 @@ class ExponentialGraphs:
                     df['PercentFast'] = percentFast
                     df.to_csv(os.path.join(subjectFolder,f))
         #Create group average percent fast sheets
-        #create a list to keep track of conditions
-        conditions = ['Sham','Anod','Cath','Vertex']
+        groups = uniqueCondGroup[0]
+        conditions = ['Anod','cath','vertex','sham']
         #create a list to deliniate subject groups
         groups = ['CONTROL','PATIENT']
-        
+      
         #change directory to the output
         os.chdir(outputFolder)
         #We can make another folder here to put the sheets
@@ -239,16 +240,15 @@ class ExponentialGraphs:
         '''
         #To comeplete this we first need to ensure that subject, run
         #   data is generated for both the nonNormData and normData
-        '''
         for d in [nonNormData,normData]:
             uniqueValues = self.getUnique(filepath=d)
             try:
                 self.averageTrials(filepath=os.path.join(d,'WrangledData','SUBJECT_RUN'))
             except:
                 self.averageTrials(filepath=os.path.join(d,'NormalizedWrangledData','SUBJECT_RUN'))
-        '''
         #Now we can look into averaging the data that we want
         conditions = self.getUnique(filepath=nonNormData,columns=['CONDITION'])[0]
+        conditions = ['Vertex','Sham','Anod','Cath']
         subjects = self.getUnique(filepath=nonNormData)[0]
         
         #First create paths for where the subject,run average data
@@ -348,10 +348,10 @@ class ExponentialGraphs:
 
 
 if __name__ == '__main__':
-
+    
     expG = ExponentialGraphs()
 
-    '''#Non-Normalized Data    
+    ''' #Non-Normalized Data    
     fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
     uniqueValues = expG.getUnique(filepath=fileDir)
 
@@ -373,10 +373,9 @@ if __name__ == '__main__':
     subjectFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs'
     trialDataFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN'
     outputFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs'
-    expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
+    #expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
 
     '''
-
     #combine and save RT data
     nonNormData = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
 

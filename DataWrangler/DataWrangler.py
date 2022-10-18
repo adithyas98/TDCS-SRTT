@@ -199,8 +199,8 @@ class TDCSSRTTDataWrangler:
 
 if __name__ == '__main__':
     #fileDir = '/mnt/h/tDCS paper2 SRTT'
-    '''#Non Normalized Data
-    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data'
+    #Non Normalized Data
+    fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
     DW = TDCSSRTTDataWrangler(fileDir=fileDir)
 
     #Now we can create an output file
@@ -209,7 +209,7 @@ if __name__ == '__main__':
         os.mkdir(outputDir)
     os.chdir(outputDir)
 
-    '''
+    
 
     '''
     #Columns 1
@@ -237,17 +237,18 @@ if __name__ == '__main__':
     os.chdir(outputDir)   
 
 
-
     print("Combining Data!")
     #Now we can go through and create the combined csv files
     os.chdir(outputDir) 
     for d in os.listdir():
+        if not os.path.isdir(d):
+            #Not a directory so continue
+            continue
         folder = os.path.join(outputDir,d)
         extractedData = DW.combineData(folder,'LOG_RT')
         DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
-    '''
 
-    '''
+    
     #Columns 1,Log RT Only
     columns = ['GROUP','BLOCK','TASK','CONDITION']
     folder = '_'.join(columns)
@@ -266,7 +267,7 @@ if __name__ == '__main__':
 
 
     #Run the same stuff for the normalized Data
-    fileDir = '/Users/adish/Documents/NYPSI and NKI Research/TDCS-SRTT/data/NormalizedData'
+    fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData'
     DW = TDCSSRTTDataWrangler(fileDir=fileDir)
 
     #Now we can create an output file
@@ -291,8 +292,8 @@ if __name__ == '__main__':
     print(type(extractedData))
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
-    '''
 
+    '''
     #Columns 3
     columns = ['SUBJECT','RUN']
     folder = '_'.join(columns)
@@ -301,8 +302,7 @@ if __name__ == '__main__':
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)   
 
-
-
+    '''
     print("Combining Data!")
     #Now we can go through and create the combined csv files
     os.chdir(outputDir) 
@@ -312,4 +312,4 @@ if __name__ == '__main__':
         folder = os.path.join(outputDir,d)
         extractedData = DW.combineData(folder,'Normalized_Log_RT')
         DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
-
+    '''

@@ -47,7 +47,8 @@ class EEGProcessing:
         for key,value in outputDict.items():
             #print(len(value),len(value[0]))
             outputDict[key] = np.array(value)
-            print(key,outputDict[key].shape)
+            if DEBUG:
+                print(key,outputDict[key].shape)
 
 
             
