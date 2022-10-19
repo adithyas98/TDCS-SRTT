@@ -293,7 +293,7 @@ if __name__ == '__main__':
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)
 
-    '''
+    
     #Columns 3
     columns = ['SUBJECT','RUN']
     folder = '_'.join(columns)
@@ -302,7 +302,7 @@ if __name__ == '__main__':
     DW.saveDataFrame(extractedData,folder)
     os.chdir(outputDir)   
 
-    '''
+   
     print("Combining Data!")
     #Now we can go through and create the combined csv files
     os.chdir(outputDir) 
@@ -313,3 +313,10 @@ if __name__ == '__main__':
         extractedData = DW.combineData(folder,'Normalized_Log_RT')
         DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format(d))
     '''
+    print("Combining Data!")
+    #Now we can go through and create the combined csv files
+    os.chdir("/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs") 
+    folder = "/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs"
+    extractedData = DW.combineData(folder,'GroupAvgLogRT')
+    DW.saveDataFrame(extractedData,folder,baseFilename="{}_CombinedData".format("AverageRunRTbySubject&Condition"))
+

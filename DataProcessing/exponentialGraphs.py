@@ -117,7 +117,7 @@ class ExponentialGraphs:
                 #now iterate through each of the files to find the ones that
                 #   and append the ones that belong together
                 for f in os.listdir(filepath):
-                    if (c in f) and (g in f):
+                    if (c.lower() in f.lower()) and (g.lower() in f.lower()):
                         #then we want to add the subject to our dictionary
                         #first read the file
                         dataFile = pd.read_csv(os.path.join(filepath,f))
@@ -210,7 +210,7 @@ class ExponentialGraphs:
                 averageDf['RUN'] = uniqueSubjectRun[0]
                 #Now iterate through the files and find the ones that match
                 for f in os.listdir(subjectFolder):
-                    if (c in f) and (g in f):
+                    if (c.lower() in f.lower()) and (g.lower() in f.lower()):
                         #open the file as a dataframe
                         tempDf = pd.read_csv(os.path.join(subjectFolder,f))
 
@@ -359,7 +359,7 @@ if __name__ == '__main__':
 
     expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/WrangledData/SUBJECT_RUN/subjectRunAvgs')
 
-
+    '''
     #Normalized Data
 
     expG = ExponentialGraphs()
@@ -373,9 +373,8 @@ if __name__ == '__main__':
     subjectFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs'
     trialDataFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN'
     outputFolder = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs/groupAverageLogRTs'
-    #expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
+    expG.percentFast(subjectFolder=subjectFolder,trialDataFolder=trialDataFolder,outputFolder=outputFolder,fastCutOff=-0.275)
 
-    '''
     #combine and save RT data
     nonNormData = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data'
 
