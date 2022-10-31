@@ -129,6 +129,7 @@ class ExponentialGraphs:
                 print(outputDf.head(10))
                 #Now average subjects accross the runs
                 outputDf['GroupAvgLogRT'] = outputDf.mean(axis=1)
+                outputDf['GroupSEMLogRT'] = outputDf.sem(axis=1)
                 #then actually save it
                 outputFilePath = os.path.join(outputDir,'{}_{}_RunAvgLogRT.csv'.format(c,g))
                 outputDf.to_csv(outputFilePath)
@@ -184,7 +185,6 @@ class ExponentialGraphs:
                     df['PercentFast'] = percentFast
                     df.to_csv(os.path.join(subjectFolder,f))
         #Create group average percent fast sheets
-        groups = uniqueCondGroup[0]
         conditions = ['Anod','cath','vertex','sham']
         #create a list to deliniate subject groups
         groups = ['CONTROL','PATIENT']
@@ -365,7 +365,6 @@ if __name__ == '__main__':
     expG = ExponentialGraphs()
     fileDir = '/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData'
     uniqueValues = expG.getUnique(filepath=fileDir)
-
     expG.averageTrials(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN')
 
     expG.getGroupAvearges(filepath='/Users/adish/Documents/NYPSI Research/TDCS-SRTT/data/NormalizedData/NormalizedWrangledData/SUBJECT_RUN/subjectRunAvgs')
