@@ -16,7 +16,7 @@ class ShortFatConverter:
 
     def __init__(self):
         pass
-    def convert(self,file,outfile):
+    def convert(self,file,outfile,includeGroup=False):
         '''
         This method will do the conversion necessary
         Inputs:
@@ -39,8 +39,8 @@ class ShortFatConverter:
         change = partial(self.changeValues,values=conditions,unique=df['Condition'].unique())
         df['Condition'] = df['Condition'].apply(change)
         #change groups
-        change = partial(self.changeValues,values=groups,unique=df['Group'].unique())
-        df['Group'] = df['Group'].apply(change) 
+        #change = partial(self.changeValues,values=groups,unique=df['Group'].unique())
+        #df['Group'] = df['Group'].apply(change) 
 
         #We want to get all of the unique values in the columns
         #Get a list of the subjects
@@ -61,6 +61,18 @@ class ShortFatConverter:
                     data = df[(df['Subject']==sub) & (df['Connection']==conn) & (df['Condition']==cond)] 
                     if DEBUG:
                         print(data.head())
+                    if includeGroup:
+                        try:
+                            output[sub]["Group"] = int(data['Group'].values[0])
+                        except IndexError:
+                            if "Group" in output[sub]:
+                                #If it has the key then we also want to check 
+                                #   if the value is correct
+                                if output[sub]["Group"] != '':
+                                    #don't do anything to the current value
+                                    pass
+                                else:
+                                    output[sub]["Group"] = ''
                     try:
                         output[sub]["{}_{}_Coherence".format(cond,conn)] = data['Coherence'].values[0]
                     except IndexError:
@@ -73,6 +85,7 @@ class ShortFatConverter:
         outputDF = outputDF.transpose()
         if DEBUG:
             print(outputDF.head())
+
 
         #Now we can save it 
         outputDF.to_csv(outfile)
@@ -95,5 +108,10 @@ if __name__ == '__main__':
     outfile = "{}_SHORTFAT.csv".format(file.split('.')[0])
 
     conv.convert(file,outfile)
+
+    #Do the same conversion but with the group names
+    outfile = "{}_SHORTFATwithGroupNames.csv".format(file.split('.')[0])
+    
+    conv.convert(file,outfile,includeGroup=True)
 
         
